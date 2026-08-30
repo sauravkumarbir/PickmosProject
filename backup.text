@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pickmos - Open-World Creature Collecting Survival Crafting</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+        :root {
+            --primary: #00ff9d;
+            --accent: #00f0ff;
+        }
+
+        * {
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+            background: #0a0a0a;
+        }
+
+        .logo-font {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* Hero Background + Dancing Grid */
+        .hero-bg {
+            background: linear-gradient(135deg, rgba(0, 255, 157, 0.22), rgba(0, 240, 255, 0.18), rgba(192, 38, 211, 0.15)),
+                        url('https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4358270/3efd550b9ac5590aa7972c3e268937690c9fccf8/header.jpg?t=1776148808') center/cover no-repeat fixed;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(rgba(0,255,157,0.05) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(0,255,157,0.05) 1px, transparent 1px);
+            background-size: 90px 90px;
+            animation: gridDance 28s linear infinite;
+        }
+
+        @keyframes gridDance {
+            0% { background-position: 0 0; }
+            100% { background-position: 180px 180px; }
+        }
+
+        /* Jumping Bubbles Animation */
+.jumping-bubble {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1;
+    animation: jumpBubble linear infinite;
+    box-shadow: 0 0 15px currentColor;
+}
+
+@keyframes jumpBubble {
+    0% {
+        transform: translateY(100vh) scale(0.6);
+        opacity: 0.7;
+    }
+    50% {
+        transform: translateY(-20vh) scale(1.1);
+    }
+    100% {
+        transform: translateY(-120vh) scale(0.8);
+        opacity: 0;
+    }
+}
+
+        /* Dancing Lightning Effect */
+        .lightning {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0.28;
+            animation: lightningFlash 3.8s linear infinite;
+        }
+
+        @keyframes lightningFlash {
+            0%, 82% { opacity: 0; }
+            84% { opacity: 0.9; }
+            86% { opacity: 0; }
+            88% { opacity: 0.65; }
+            100% { opacity: 0; }
+        }
+
+        .navbar-white {
+            background: rgba(255, 255, 255, 0.98) !important;
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 255, 157, 0.3);
+        }
+
+        .nav-link {
+            position: relative;
+            color: #111111;
+            font-weight: 600;
+        }
+
+        .nav-link:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 3px;
+            bottom: -6px;
+            left: 0;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+        }
+
+        .nav-link:hover:after {
+            width: 100%;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(0, 255, 157, 0.35);
+            box-shadow: 0 0 50px rgba(0, 255, 157, 0.25);
+        }
+
+        .neon-text {
+            text-shadow: 0 0 15px #00ff9d, 0 0 40px #00ff9d, 0 0 80px #00f0ff;
+        }
+
+        /* Dancing Hero Title - NOW FULLY RESPONSIVE */
+        .hero-title {
+            font-size: 3rem;
+            line-height: 1.05;
+            font-weight: 700;
+            background: linear-gradient(90deg, #00ff9d, #00f0ff, #c026d3, #00ff9d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 300% 100%;
+            animation: titleDance 7s ease-in-out infinite;
+        }
+
+        @media (min-width: 640px) {
+            .hero-title { font-size: 4rem; }
+        }
+        @media (min-width: 768px) {
+            .hero-title { font-size: 5.2rem; }
+        }
+        @media (min-width: 1024px) {
+            .hero-title { font-size: 5.8rem; }
+        }
+
+        @keyframes titleDance {
+            0%, 100% { transform: translateY(0) rotate(-1deg); }
+            50% { transform: translateY(-25px) rotate(2.5deg); }
+        }
+
+        .float-dance {
+            animation: floatDance 6.8s ease-in-out infinite;
+        }
+
+        @keyframes floatDance {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-32px) rotate(3deg); }
+        }
+
+        /* Card Dancing Hover */
+        .card-hover:hover {
+            transform: translateY(-28px) rotate(3deg) scale(1.05);
+            box-shadow: 0 40px 90px rgba(0, 255, 157, 0.5);
+        }
+
+        /* Screenshot Dancing */
+        .screenshot-grid img {
+            transition: all 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .screenshot-grid img:hover {
+            transform: scale(1.18) rotate(4deg);
+        }
+
+        /* Futuristic Button with Pulse */
+        .futuristic-btn {
+            position: relative;
+            overflow: hidden;
+            animation: pulseGlow 4s ease-in-out infinite;
+        }
+
+        .futuristic-btn::after {
+            content: '';
+            position: absolute;
+            inset: -150%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+            transform: rotate(30deg);
+            animation: shineDance 3s linear infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 30px rgba(0, 255, 157, 0.7); }
+            50% { box-shadow: 0 0 70px rgba(0, 240, 255, 1); }
+        }
+
+        @keyframes shineDance {
+            0% { transform: translateX(-200%) rotate(30deg); }
+            100% { transform: translateX(400%) rotate(30deg); }
+        }
+
+        /* Scroll Reveal Animation */
+        .section-reveal {
+            opacity: 0;
+            transform: translateY(80px);
+            animation: revealDance 1s forwards;
+        }
+
+        @keyframes revealDance {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Floating Energy Orbs */
+        .floating-orb {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: #00ff9d;
+            border-radius: 50%;
+            box-shadow: 0 0 40px #00ff9d;
+            animation: orbDance 16s linear infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes orbDance {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(var(--x), var(--y)); }
+        }
+
+        /* Extra mobile improvements */
+        @media (max-width: 640px) {
+            .hero-bg {
+                background-position: center 30%;
+            }
+            .max-w-screen-2xl {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-black text-white overflow-x-hidden">
+
+<!-- NAVBAR - Your original kept fully -->
+<nav class="fixed top-0 left-0 right-0 z-50 navbar-white">
+    <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8 py-4 flex items-center justify-between">
+        <div class="flex items-center">
+            <img src="Images/logo1.png" alt="Pickmos Logo" class="h-9 sm:h-10 w-auto">
+        </div>
+
+        <div class="hidden md:flex items-center gap-x-6 lg:gap-x-8 text-sm font-medium">
+            <a href="#about" class="nav-link">ABOUT</a>
+            <a href="#features" class="nav-link">FEATURES</a>
+            <a href="#multiplayer" class="nav-link">MULTIPLAYER</a>
+            <a href="#screenshots" class="nav-link">SCREENSHOTS</a>
+            <a href="#requirements" class="nav-link">REQUIREMENTS</a>
+            <a href="#faq" class="nav-link">FAQ</a>
+        </div>
+
+        <div class="hidden md:flex items-center gap-x-4 lg:gap-x-6">
+            <div class="flex items-center gap-x-6 text-2xl">
+                <a href="https://twitter.com/pickmon_en" target="_blank" class="social-btn text-black hover:scale-110">
+                    <i class="fa-brands fa-x-twitter"></i>
+                </a>
+            </div>
+            <a href="https://steamdb.info/app/4358270/" target="_blank"
+                class="flex items-center gap-x-3 bg-black hover:bg-zinc-900 text-white px-5 sm:px-6 py-3 rounded-2xl font-semibold text-sm futuristic-btn">
+                <i class="fa-brands fa-steam"></i>
+                <span>WISHLIST</span>
+            </a>
+        </div>
+
+        <button id="mobile-btn" class="md:hidden text-3xl text-black p-2">
+            <i class="fa-solid fa-bars" id="menu-icon"></i>
+        </button>
+    </div>
+
+    <!-- MOBILE MENU - Your original kept fully -->
+    <div id="mobile-menu" class="hidden md:hidden fixed top-[73px] left-0 right-0 bg-white border-t border-gray-200 shadow-xl py-8 z-40 max-h-[calc(100vh-73px)] overflow-y-auto">
+        <div class="px-8 flex flex-col gap-y-6 text-lg font-medium">
+            <a href="#about" class="mobile-link text-black py-3 border-b border-gray-100">ABOUT</a>
+            <a href="#features" class="mobile-link text-black py-3 border-b border-gray-100">FEATURES</a>
+            <a href="#multiplayer" class="mobile-link text-black py-3 border-b border-gray-100">MULTIPLAYER</a>
+            <a href="#screenshots" class="mobile-link text-black py-3 border-b border-gray-100">SCREENSHOTS</a>
+            <a href="#requirements" class="mobile-link text-black py-3 border-b border-gray-100">REQUIREMENTS</a>
+            <a href="#faq" class="mobile-link text-black py-3">FAQ</a>
+
+            <a href="https://steamdb.info/app/4358270/" target="_blank"
+                class="mt-4 flex items-center justify-center gap-x-3 bg-black hover:bg-zinc-900 text-white px-8 py-4 rounded-2xl font-semibold text-base futuristic-btn">
+                <i class="fa-brands fa-steam"></i>
+                WISHLIST ON STEAM
+            </a>
+
+            <div class="pt-8 border-t border-gray-200 mt-4">
+                <p class="text-sm text-gray-500 mb-4 text-center">Follow Us</p>
+                <div class="flex justify-center gap-x-10 text-4xl">
+                    <a href="https://twitter.com/pickmon_en" target="_blank" class="text-black hover:scale-110">
+                        <i class="fa-brands fa-x-twitter"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO - Everything aligned to the RIGHT side + FULLY RESPONSIVE -->
+<header id="hero" class="hero-bg min-h-screen flex items-center relative">
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/65 to-black"></div>
+    
+    <!-- Dancing Lightning -->
+    <div class="lightning">
+        <svg width="100%" height="100%" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M700 100 L780 280 L720 320 L880 520 L810 580 L980 820 L900 880 L1050 1080" stroke="#00f0ff" stroke-width="8" stroke-linejoin="round"/>
+        </svg>
+    </div>
+
+    <!-- Floating Orbs -->
+    <div class="floating-orb" style="top:22%; left:12%; --x:90px; --y:-140px;"></div>
+    <div class="floating-orb" style="top:38%; left:78%; --x:-100px; --y:130px; background:#00f0ff; width:13px; height:13px;"></div>
+    <div class="floating-orb" style="top:65%; left:18%; --x:120px; --y:-110px;"></div>
+
+    <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8 relative z-10 pt-12 w-full">
+        <!-- "Launching Soon" badge - moved to right -->
+        <div class="flex justify-end">
+            <div class="inline-flex items-center gap-3 px-7 py-3 glass rounded-3xl text-sm font-medium tracking-wider mb-10 float-dance">
+                <span class="relative flex h-3 w-3">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00ff9d] opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-[#00ff9d]"></span>
+                </span>
+                LAUNCHING SOON ON STEAM
+            </div>
+        </div>
+
+        <div class="flex justify-end">
+            <div class="max-w-lg text-right">
+                <h1 class="hero-title logo-font mb-6 float-dance">PICKMOS</h1>
+                <p class="text-3xl md:text-4xl text-white/90 leading-tight neon-text float-dance" style="animation-delay: 0.5s;">
+                    Open-world creature-collecting survival crafting game
+                </p>
+
+                <div class="mt-12 sm:mt-16 flex flex-col sm:flex-row gap-6 justify-end">
+                    <a href="https://steamdb.info/app/4358270/" target="_blank"
+                        class="flex-1 sm:flex-none px-10 py-6 bg-gradient-to-r from-[#00ff9d] to-cyan-400 text-black font-bold text-xl rounded-3xl flex items-center justify-center gap-4 futuristic-btn">
+                        <i class="fa-brands fa-steam text-3xl"></i>
+                        WISHLIST ON STEAM
+                    </a>
+                    <button onclick="document.getElementById('trailer-section').scrollIntoView({behavior: 'smooth'})"
+                        class="flex-1 sm:flex-none px-10 py-6 border-2 border-white/70 hover:border-white text-white font-bold text-xl rounded-3xl flex items-center justify-center gap-4 futuristic-btn">
+                        <i class="fa-solid fa-play"></i>
+                        WATCH TRAILER
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- ABOUT - Your original kept fully -->
+<section id="about" class="py-28 bg-gradient-to-b from-black to-zinc-950 section-reveal">
+    <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8">
+        <div class="max-w-3xl mx-auto text-center">
+            <h2 class="text-4xl sm:text-5xl md:text-6xl font-bold logo-font mb-8 neon-text">Welcome to PICKMOS</h2>
+            <p class="text-xl sm:text-2xl text-white/80 leading-relaxed">
+                An open-world creature-collecting survival crafting game.
+                Embark on a journey across a mysterious continent filled with ancient civilizations and wondrous creatures called Pickmos.
+            </p>
+            <p class="mt-6 text-white/70">
+                Live and fight alongside your Pickmos. Build industrial empires. Uncover hidden secrets.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- TRAILER - Modified with Jumping Bubbles Background -->
+<section id="trailer-section" class="py-20 bg-black relative overflow-hidden">
+    
+    <!-- Jumping Bubbles Container -->
+    <div id="jumping-bubbles" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 relative z-10">
+        <h2 class="text-4xl font-bold text-center mb-12 neon-text">Official Gameplay Trailer</h2>
+        
+        <div class="relative group mx-auto max-w-4xl rounded-3xl overflow-hidden shadow-2xl bg-zinc-950">
+            <video id="trailer-video" class="w-full aspect-video object-cover" loop muted playsinline poster="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4358270/3efd550b9ac5590aa7972c3e268937690c9fccf8/header.jpg?t=1776148808">
+                <source src="video/videoplayback.mp4" type="video/mp4">
+            </video>
+            
+            <div id="play-overlay" class="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-black/20 cursor-pointer">
+                <div class="w-20 h-20 bg-white/90 hover:bg-[#00ff9d] rounded-full flex items-center justify-center">
+                    <i class="fa-solid fa-play text-4xl text-black ml-1"></i>
+                </div>
+            </div>
+            
+            <div class="absolute bottom-6 left-6 text-white text-sm font-medium opacity-70 group-hover:opacity-100 transition-opacity">
+                Hover to play • Click to toggle sound
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- GAME SCREENSHOTS - Your original 8 screenshots kept with dancing effect -->
+<section id="screenshots" class="py-28 bg-black">
+    <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8">
+        <h2 class="text-4xl sm:text-5xl font-bold logo-font text-center mb-16 neon-text">Game Screenshots</h2>
+        <div class="screenshot-grid grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+            <!-- Screenshot 1 -->
+            <div class="group relative overflow-hidden rounded-3xl aspect-[16/10] shadow-2xl card-hover">
+                <img src="https://gaming-cdn.com/images/products/22030/screenshot/pickmos-pc-steam-wallpaper-2.jpg?v=1776154157" alt="Screenshot 1" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="absolute bottom-5 left-5 text-white text-sm font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">Creature Exploration</div>
+            </div>
+            <!-- Screenshot 2 -->
+            <div class="group relative overflow-hidden rounded-3xl aspect-[16/10] shadow-2xl card-hover">
+                <img src="https://gaming-cdn.com/images/products/22030/screenshot/pickmos-pc-steam-wallpaper-5.jpg?v=1776154157" alt="Screenshot 2" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="absolute bottom-5 left-5 text-white text-sm font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">Real-time Combat</div>
+            </div>
+            <!-- Screenshot 3 -->
+            <div class="group relative overflow-hidden rounded-3xl aspect-[16/10] shadow-2xl card-hover">
+                <img src="https://gaming-cdn.com/images/products/22030/screenshot/pickmos-pc-steam-wallpaper-3.jpg?v=1776154157" alt="Screenshot 3" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="absolute bottom-5 left-5 text-white text-sm font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">Base Building</div>
+            </div>
+            <!-- Screenshot 4 -->
+            <div class="group relative overflow-hidden rounded-3xl aspect-[16/10] shadow-2xl card-hover">
+                <img src="https://static.gosugamers.net/96/0e/64/882b48daf53c8cc4c25734e1024b3d081152a8663563f70289ad66f929.webp?w=1600" alt="Screenshot 4" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="absolute bottom-5 left-5 text-white text-sm font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">Open World</div>
+            </div>
+            <!-- Screenshot 5 -->
+            <div class="group relative overflow-hidden rounded-3xl aspect-[16/10] shadow-2xl card-hover">
+                <img src="https://vpesports.com/wp-content/uploads/2026/04/Pickmos-Replaces-Pickmon-Pokemon-Clone-Sparks-Controversy.jpg" alt="Screenshot 5" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="absolute bottom-5 left-5 text-white text-sm font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">Creature Capturing</div>
+            </div>
+            <!-- Screenshot 6 -->
+            <div class="group relative overflow-hidden rounded-3xl aspect-[16/10] shadow-2xl card-hover">
+                <img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4358270/cbda27c4e06b0d9bbb7994789e19152b7313e94e/page_bg_raw.jpg?t=1776148808" alt="Screenshot 6" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="absolute bottom-5 left-5 text-white text-sm font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">Industrial Automation</div>
+            </div>
+            <!-- Screenshot 7 -->
+            <div class="group relative overflow-hidden rounded-3xl aspect-[16/10] shadow-2xl card-hover">
+                <img src="https://vpesports.com/wp-content/uploads/2026/04/Pickmos-Replaces-Pickmon.jpg" alt="Screenshot 7" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="absolute bottom-5 left-5 text-white text-sm font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">Multiplayer Co-op</div>
+            </div>
+            <!-- Screenshot 8 -->
+            <div class="group relative overflow-hidden rounded-3xl aspect-[16/10] shadow-2xl card-hover">
+                <img src="https://blog.badabim.fr/wp-content/uploads/2026/04/jeu-pickmos.png" alt="Screenshot 8" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="absolute bottom-5 left-5 text-white text-sm font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">Ancient Ruins</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SURVIVAL CRAFTING & BASE BUILDING - Enhanced with Nice Hover Animation -->
+<section class="py-28 bg-gradient-to-b from-zinc-950 to-black">
+    <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8">
+        <div class="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
+            
+            <!-- Text Side -->
+            <div class="section-reveal">
+                <h2 class="text-4xl sm:text-5xl font-bold logo-font mb-8 neon-text">Does Pickmos Have Survival Crafting and Base Building?</h2>
+                <p class="text-lg text-white/80 leading-relaxed">
+                    Yes. Pickmos features deep survival progression, farming, building homes for you and your Pickmos,
+                    and developing industrial systems that can automatically produce weapons, equipment, and resources.
+                </p>
+                <div class="mt-8 flex items-center gap-4">
+                    <div class="w-3 h-3 bg-[#00ff9d] rounded-full animate-pulse"></div>
+                    <span class="text-[#00ff9d] font-medium">Industrial Automation Available</span>
+                </div>
+            </div>
+
+            <!-- Image Side with Beautiful Hover Animation -->
+            <div class="relative group overflow-hidden rounded-3xl shadow-2xl card-hover">
+                <img 
+                    src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4358270/cbda27c4e06b0d9bbb7994789e19152b7313e94e/page_bg_raw.jpg?t=1776148808"
+                    alt="Base Building"
+                    class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:rotate-2">
+                
+                <!-- Overlay Glow Effect -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                
+                <!-- Hover Shine / Lightning Line -->
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                
+                <!-- Caption -->
+                <div class="absolute bottom-6 left-6 text-white text-sm font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0">
+                    Massive Industrial Base Building
+                </div>
+                
+                <!-- Corner Glow Accent -->
+                <div class="absolute top-4 right-4 w-8 h-8 border border-[#00ff9d]/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- NEW: Legendary Pickmos Gallery -->
+<section id="creatures" class="py-28 bg-gradient-to-b from-zinc-950 to-black">
+    <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8">
+        <h2 class="text-4xl sm:text-5xl font-bold logo-font text-center mb-16 neon-text">Legendary Pickmos Gallery</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+            <div class="group relative overflow-hidden rounded-3xl aspect-square shadow-2xl card-hover">
+                <img src="https://gaming-cdn.com/images/products/22030/screenshot/pickmos-pc-steam-wallpaper-2.jpg?v=1776154157" class="w-full h-full object-cover" alt="Pickmos">
+            </div>
+            <div class="group relative overflow-hidden rounded-3xl aspect-square shadow-2xl card-hover">
+                <img src="https://vpesports.com/wp-content/uploads/2026/04/Pickmos-Replaces-Pickmon-Pokemon-Clone-Sparks-Controversy.jpg" class="w-full h-full object-cover" alt="Pickmos">
+            </div>
+            <div class="group relative overflow-hidden rounded-3xl aspect-square shadow-2xl card-hover">
+                <img src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4358270/cbda27c4e06b0d9bbb7994789e19152b7313e94e/page_bg_raw.jpg?t=1776148808" class="w-full h-full object-cover" alt="Pickmos">
+            </div>
+            <div class="group relative overflow-hidden rounded-3xl aspect-square shadow-2xl card-hover">
+                <img src="https://vpesports.com/wp-content/uploads/2026/04/Pickmos-Replaces-Pickmon.jpg" class="w-full h-full object-cover" alt="Pickmos">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- WHAT KIND OF GAMEPLAY - Your original kept -->
+<section id="gameplay" class="py-28 bg-zinc-950">
+    <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8">
+        <div class="max-w-3xl mx-auto text-center mb-16">
+            <h2 class="text-4xl sm:text-5xl font-bold logo-font mb-6">What Kind of Gameplay Does Pickmos Have?</h2>
+            <p class="text-xl text-white/80">
+                Pickmos blends creature collecting, open-world exploration, real-time combat, survival elements, and deep crafting & automation.
+            </p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="glass p-8 rounded-3xl card-hover section-reveal">
+                <i class="fa-solid fa-dragon text-5xl text-[#00ff9d] mb-6"></i>
+                <h3 class="text-2xl font-semibold mb-4">Creature Collecting & Bonding</h3>
+                <p class="text-white/70">Discover, capture, and train wondrous Pickmos. Fight together as a team.</p>
+            </div>
+            <div class="glass p-8 rounded-3xl card-hover section-reveal">
+                <i class="fa-solid fa-swords text-5xl text-[#00ff9d] mb-6"></i>
+                <h3 class="text-2xl font-semibold mb-4">Action Combat</h3>
+                <p class="text-white/70">Real-time battles against wild creatures and enemies.</p>
+            </div>
+            <div class="glass p-8 rounded-3xl card-hover section-reveal">
+                <i class="fa-solid fa-hammer text-5xl text-[#00ff9d] mb-6"></i>
+                <h3 class="text-2xl font-semibold mb-4">Survival Crafting & Automation</h3>
+                <p class="text-white/70">Farm, build, and create industrial systems that produce items automatically.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FEATURES - Your original kept -->
+<section id="features" class="py-28 bg-black">
+    <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8">
+        <h2 class="text-4xl sm:text-5xl font-bold logo-font text-center mb-16 neon-text">Key Features</h2>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="glass p-10 rounded-3xl card-hover section-reveal">
+                <h3 class="text-2xl font-semibold mb-4">Open World Exploration</h3>
+                <p class="text-white/70">Vast continent with ancient ruins, diverse biomes, and hidden secrets.</p>
+            </div>
+            <div class="glass p-10 rounded-3xl card-hover section-reveal">
+                <h3 class="text-2xl font-semibold mb-4">Creature Collecting</h3>
+                <p class="text-white/70">Capture and train dozens of unique Pickmos to fight by your side.</p>
+            </div>
+            <div class="glass p-10 rounded-3xl card-hover section-reveal">
+                <h3 class="text-2xl font-semibold mb-4">Base Building & Automation</h3>
+                <p class="text-white/70">Build homes and massive industrial factories that run automatically.</p>
+            </div>
+            <div class="glass p-10 rounded-3xl card-hover section-reveal">
+                <h3 class="text-2xl font-semibold mb-4">Real-time Combat</h3>
+                <p class="text-white/70">Engage in dynamic battles with your Pickmos team.</p>
+            </div>
+            <div class="glass p-10 rounded-3xl card-hover section-reveal">
+                <h3 class="text-2xl font-semibold mb-4">Farming & Survival</h3>
+                <p class="text-white/70">Gather resources, farm crops, and survive in the wild.</p>
+            </div>
+            <div class="glass p-10 rounded-3xl card-hover section-reveal">
+                <h3 class="text-2xl font-semibold mb-4">Multiplayer Co-op</h3>
+                <p class="text-white/70">Play together with friends online or via LAN.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- MULTIPLAYER - Your original kept -->
+<section id="multiplayer" class="py-28 bg-black">
+    <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8 text-center">
+        <h2 class="text-4xl sm:text-5xl font-bold logo-font mb-8">Is Pickmos Multiplayer?</h2>
+        <p class="text-2xl text-white/80 max-w-2xl mx-auto">
+            Yes! Pickmos supports single-player, online co-op, and LAN co-op. Team up with friends to explore, build bases, and battle together.
+        </p>
+    </div>
+</section>
+
+<!-- EXPLORE THE WORLD - Your original kept -->
+<section id="world" class="py-28 bg-zinc-950">
+    <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8">
+        <h2 class="text-4xl sm:text-5xl font-bold logo-font text-center mb-16">Explore the Wonderful World of Pickmos</h2>
+        <p class="text-center text-xl text-white/70 max-w-2xl mx-auto">
+            A mysterious continent filled with ancient civilizations, diverse biomes, and countless unique Pickmos waiting to be discovered.
+        </p>
+    </div>
+</section>
+
+<!-- PLATFORMS & LANGUAGES - Your original kept -->
+<section id="platforms" class="py-28 bg-zinc-950">
+    <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8">
+        <h2 class="text-4xl sm:text-5xl font-bold logo-font text-center mb-16 neon-text">Platforms & Language Support</h2>
+        <div class="grid md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+            <div class="glass p-10 rounded-3xl">
+                <h3 class="text-3xl font-semibold mb-6">Platforms</h3>
+                <p class="text-2xl text-white/90">Steam (PC)</p>
+                <p class="mt-4 text-white/70">Wishlist now on Steam. Additional platforms to be announced.</p>
+            </div>
+            <div class="glass p-10 rounded-3xl">
+                <h3 class="text-3xl font-semibold mb-6">Supported Languages</h3>
+                <p class="text-lg text-white/80">English, Simplified Chinese, Traditional Chinese, Japanese, Korean, French, German, Spanish, Portuguese, and more.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- PC REQUIREMENTS - Your original kept -->
+<section id="requirements" class="py-28 bg-black">
+    <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8">
+        <h2 class="text-4xl sm:text-5xl font-bold logo-font text-center mb-16 neon-text">PC Requirements</h2>
+        <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-10">
+            <div class="glass p-10 rounded-3xl">
+                <h3 class="text-2xl font-bold mb-8 text-[#00ff9d]">Minimum</h3>
+                <ul class="space-y-6 text-white/80">
+                    <li><strong>OS:</strong> Windows 10 or later (64-bit)</li>
+                    <li><strong>Processor:</strong> Intel i5-3570K 3.4 GHz 4 Core</li>
+                    <li><strong>Memory:</strong> 16 GB RAM</li>
+                    <li><strong>Graphics:</strong> GeForce GTX 1050 (2GB)</li>
+                    <li><strong>DirectX:</strong> Version 11</li>
+                    <li><strong>Storage:</strong> 40 GB available space (SSD recommended)</li>
+                </ul>
+            </div>
+            <div class="glass p-10 rounded-3xl border border-[#00ff9d]/30">
+                <h3 class="text-2xl font-bold mb-8 text-[#00ff9d]">Recommended</h3>
+                <ul class="space-y-6 text-white/80">
+                    <li><strong>OS:</strong> Windows 10 or later (64-bit)</li>
+                    <li><strong>Processor:</strong> Intel i9-9900K 3.6 GHz 8 Core</li>
+                    <li><strong>Memory:</strong> 32 GB RAM</li>
+                    <li><strong>Graphics:</strong> GeForce RTX 2070</li>
+                    <li><strong>Storage:</strong> 40 GB available space (SSD recommended)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- WHY IS PICKMOS GETTING ATTENTION - Your original kept -->
+<section class="py-28 bg-gradient-to-b from-zinc-950 to-black">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 md:px-8 text-center">
+        <h2 class="text-4xl sm:text-5xl font-bold logo-font mb-10">Why Is Pickmos Getting So Much Attention?</h2>
+        <p class="text-xl text-white/80 leading-relaxed">
+            Pickmos has sparked huge interest due to its mix of creature collecting, open-world survival, and base building.
+            The game has drawn comparisons to Pokémon and Palworld, especially regarding creature design and gameplay style.
+            This has led to widespread discussion across gaming media including GameSpot, PC Gamer, and GamesRadar.
+        </p>
+    </div>
+</section>
+
+<!-- FAQ - Your original kept fully -->
+<section id="faq" class="py-28 bg-black">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 md:px-8">
+        <h2 class="text-4xl sm:text-5xl font-bold logo-font text-center mb-16 neon-text">Pickmos FAQ</h2>
+        <div class="space-y-8">
+            <div class="glass p-8 rounded-3xl"><h3 class="text-xl font-semibold mb-3">What is Pickmos?</h3><p class="text-white/70">Pickmos is an upcoming open-world creature-collecting survival crafting game where you explore a mysterious continent, capture creatures, build bases, and battle alongside your Pickmos.</p></div>
+            <div class="glass p-8 rounded-3xl"><h3 class="text-xl font-semibold mb-3">Is Pickmos multiplayer?</h3><p class="text-white/70">Yes. It supports single-player, online co-op, and LAN co-op.</p></div>
+            <div class="glass p-8 rounded-3xl"><h3 class="text-xl font-semibold mb-3">When is Pickmos coming out?</h3><p class="text-white/70">Pickmos is launching soon on Steam. Exact release date has not been announced yet.</p></div>
+            <div class="glass p-8 rounded-3xl"><h3 class="text-xl font-semibold mb-3">Does Pickmos support Chinese?</h3><p class="text-white/70">Yes, it supports Simplified Chinese and Traditional Chinese for interface and subtitles.</p></div>
+            <div class="glass p-8 rounded-3xl"><h3 class="text-xl font-semibold mb-3">Is Pickmos on Steam?</h3><p class="text-white/70">Yes, you can wishlist it now on the official Steam page.</p></div>
+            <div class="glass p-8 rounded-3xl"><h3 class="text-xl font-semibold mb-3">What platforms will Pickmos be on?</h3><p class="text-white/70">Currently available for PC via Steam. More platforms may be announced later.</p></div>
+            <div class="glass p-8 rounded-3xl"><h3 class="text-xl font-semibold mb-3">What are the PC requirements for Pickmos?</h3><p class="text-white/70">See the PC Requirements section above for minimum and recommended specifications.</p></div>
+            <div class="glass p-8 rounded-3xl"><h3 class="text-xl font-semibold mb-3">Does Pickmos have base building?</h3><p class="text-white/70">Yes — you can build homes for yourself and your Pickmos and develop automated industrial systems.</p></div>
+            <div class="glass p-8 rounded-3xl"><h3 class="text-xl font-semibold mb-3">Can you play Pickmos with friends?</h3><p class="text-white/70">Yes, through online co-op and LAN co-op features.</p></div>
+            <div class="glass p-8 rounded-3xl"><h3 class="text-xl font-semibold mb-3">Who is developing Pickmos?</h3><p class="text-white/70">Pickmos is being developed by PocketGame.</p></div>
+            <div class="glass p-8 rounded-3xl"><h3 class="text-xl font-semibold mb-3">What languages does Pickmos support?</h3><p class="text-white/70">English, Simplified Chinese, Traditional Chinese, Japanese, Korean, French, German, Spanish, Portuguese, and more.</p></div>
+            <div class="glass p-8 rounded-3xl"><h3 class="text-xl font-semibold mb-3">Is Pickmos like Pokémon?</h3><p class="text-white/70">Pickmos features creature collecting and battling in an open world with survival crafting elements, which has led to many comparisons with Pokémon and Palworld.</p></div>
+        </div>
+    </div>
+</section>
+
+<!-- FINAL CTA - Your original kept -->
+<div class="py-24 bg-gradient-to-r from-[#00ff9d] via-cyan-400 to-purple-500 text-black">
+    <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8 text-center">
+        <h2 class="text-5xl sm:text-6xl font-bold logo-font">Ready to start your Pickmos journey?</h2>
+        <p class="text-2xl mt-6 mb-10">Wishlist now and be among the first to explore the new world.</p>
+        <a href="https://steamdb.info/app/4358270/" target="_blank" class="inline-block px-14 py-7 bg-black text-white text-2xl font-bold rounded-3xl futuristic-btn">WISHLIST ON STEAM</a>
+    </div>
+</div>
+
+<!-- FOOTER - Your original kept fully -->
+<footer class="bg-black py-20 border-t border-white/10">
+    <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-10 items-start">
+            <div class="md:col-span-3 flex items-center gap-x-3">
+                <div class="w-11 h-11 bg-gradient-to-br from-[#00ff9d] via-cyan-400 to-purple-500 rounded-3xl flex items-center justify-center text-black text-4xl font-bold logo-font shadow-[0_0_30px_#00ff9d] float-dance">P</div>
+                <h1 class="text-4xl font-bold logo-font tracking-tighter neon-text">PICKMOS</h1>
+            </div>
+            <div class="md:col-span-3 flex justify-center md:justify-start gap-x-8 text-3xl">
+                <a href="https://twitter.com/pickmon_en" target="_blank" class="social-btn text-white hover:scale-110">
+                    <i class="fa-brands fa-x-twitter"></i>
+                </a>
+            </div>
+            <div class="md:col-span-4">
+                <h3 class="text-xl font-semibold mb-4 text-center md:text-left neon-text">Stay Updated</h3>
+                <p class="text-white/70 text-sm mb-4 text-center md:text-left">Get latest news, creature reveals & updates</p>
+                <form class="flex flex-col sm:flex-row gap-3" onsubmit="handleSubscribe(event)">
+                    <input type="email" id="subscribe-email" placeholder="Your email address" required class="flex-1 bg-zinc-900 border border-white/20 focus:border-[#00ff9d] rounded-2xl px-5 py-3.5 text-white placeholder:text-white/50 focus:outline-none text-sm">
+                    <button type="submit" class="px-8 py-3.5 bg-gradient-to-r from-[#00ff9d] to-cyan-400 text-black font-semibold rounded-2xl hover:scale-105 whitespace-nowrap">Subscribe</button>
+                </form>
+            </div>
+            <div class="md:col-span-2 text-xs text-white/50 text-center md:text-right">
+                Fanmade Website • Not affiliated with PocketGame, NetworkGo, or the official Pickmos game
+            <br><br>
+                Contact Us:<br>
+                sauravbir6@gmail.com<br>
+                <span>twitter</span><a href="htts://x.com/sauravbir">@sauravbir</a>
+            </div>
+        </div>
+        <div class="mt-16 pt-8 border-t border-white/10">
+            <div class="text-center">
+                <p class="text-white/60 text-sm flex flex-col sm:flex-row items-center justify-center gap-x-2 gap-y-1">
+                    <span>Pickmos on Steam</span>
+                    <span class="hidden sm:inline">•</span>
+                    <span>Developed by PocketGame </span>
+                      <span class="hidden sm:inline">•</span>
+                    <span>Publisher NetworkGo </span>
+                    <span class="hidden sm:inline">•</span>
+                    <span>All Rights Reserved © 2026</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Your original JavaScript kept fully
+    const mobileBtn = document.getElementById('mobile-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const menuIcon = document.getElementById('menu-icon');
+    let isMenuOpen = false;
+
+    function toggleMenu() {
+        isMenuOpen = !isMenuOpen;
+        if (isMenuOpen) {
+            mobileMenu.classList.remove('hidden');
+            menuIcon.classList.remove('fa-bars');
+            menuIcon.classList.add('fa-xmark');
+        } else {
+            mobileMenu.classList.add('hidden');
+            menuIcon.classList.remove('fa-xmark');
+            menuIcon.classList.add('fa-bars');
+        }
+    }
+
+    mobileBtn.addEventListener('click', toggleMenu);
+
+    document.querySelectorAll('.mobile-link').forEach(link => {
+        link.addEventListener('click', () => {
+            if (isMenuOpen) toggleMenu();
+        });
+    });
+
+    const video = document.getElementById('trailer-video');
+    const overlay = document.getElementById('play-overlay');
+
+    if (video && overlay) {
+        video.addEventListener('mouseenter', () => video.play().catch(() => {}));
+        video.addEventListener('mouseleave', () => video.pause());
+
+        overlay.addEventListener('click', () => {
+            if (video.paused || video.ended) {
+                video.muted = false;
+                video.play().catch(() => {});
+            } else {
+                video.pause();
+            }
+        });
+
+        video.addEventListener('play', () => {
+            overlay.style.opacity = '0';
+            overlay.style.pointerEvents = 'none';
+        });
+
+        video.addEventListener('pause', () => {
+            overlay.style.opacity = '1';
+            overlay.style.pointerEvents = 'auto';
+        });
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+        link.addEventListener('click', function(e) {
+            const targetId = this.getAttribute('href');
+            if (targetId && targetId !== '#') {
+                e.preventDefault();
+                document.querySelector(targetId).scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    });
+
+
+    // Jumping Bubbles for Trailer Section
+function createJumpingBubbles() {
+    const container = document.getElementById('jumping-bubbles');
+    if (!container) return;
+
+    const colors = ['#00ff9d', '#00f0ff', '#c026d3', '#a5f3fc', '#67e8f9'];
+    
+    for (let i = 0; i < 25; i++) {
+        const bubble = document.createElement('div');
+        bubble.className = 'jumping-bubble';
+        
+        // Random small size
+        const size = 4 + Math.random() * 11;
+        bubble.style.width = `${size}px`;
+        bubble.style.height = `${size}px`;
+        
+        // Random color from palette
+        bubble.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        bubble.style.left = `${Math.random() * 100}vw`;
+        
+        // Random animation duration (slower = bigger feel)
+        const duration = 6 + Math.random() * 9;
+        bubble.style.animationDuration = `${duration}s`;
+        
+        // Random delay so they don't all start together
+        bubble.style.animationDelay = `-${Math.random() * 12}s`;
+        
+        // Slight horizontal movement variation
+        bubble.style.setProperty('--tx', `${(Math.random() - 0.5) * 80}px`);
+        
+        container.appendChild(bubble);
+    }
+}
+
+// Call the function when page loads
+window.addEventListener('load', createJumpingBubbles);
+</script>
+</body>
+</html>
